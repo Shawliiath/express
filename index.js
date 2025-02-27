@@ -8,6 +8,7 @@ import { getFirestore, getDocs, collection } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import session from 'express-session';
 
+
 // firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBSD-94Kap34CKFw2obydw6XbBrgOUrHCY",
@@ -29,6 +30,8 @@ const port = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 // moteur de vue
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -37,9 +40,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// midleware sess
+// middleware session avec secret
 app.use(session({
-  secret: '',
+  secret: 'monSuperSecretClé',
   resave: false,
   saveUninitialized: true,
 }));
@@ -86,7 +89,7 @@ app.post("/login", async (req, res) => {
       return res.status(401).send('<p>Mot de passe incorrect.</p>');
     }
 
-    req.session.user = userFound;
+    req.session.user = userFound;  // Stocke l'utilisateur dans la session
     
     res.send('<p>Connexion réussie ! Bienvenue. <a href="/dashboard">Accéder au tableau de bord</a></p>');
   } catch (error) {
